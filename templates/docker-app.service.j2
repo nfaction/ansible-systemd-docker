@@ -1,0 +1,15 @@
+[Unit]
+Description={{ item.value.DESCRIPTION }}
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=on-failure
+RestartSec=10
+ExecStartPre=-/usr/bin/docker kill {{ item.key }}
+ExecStartPre=-/usr/bin/docker rm {{ item.key }}
+ExecStart=/usr/bin/docker run --name {{ item.key }} --publish 8443:80 --volume "/usr/share/nginx/html/:ro" {{ item.value.CONTAINER }}
+ExecStop=/usr/bin/docker stop {{ item.key }}
+
+[Install]
+WantedBy=multi-user.target
