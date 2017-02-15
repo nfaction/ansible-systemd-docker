@@ -1,4 +1,4 @@
-Role Name
+ansible-systemd-docker  [![Build Status](https://travis-ci.org/nfaction/ansible-systemd-docker.svg?branch=master)](https://travis-ci.org/nfaction/ansible-systemd-docker)
 =========
 
 Run `docker` containers as a service via `systemd`.
