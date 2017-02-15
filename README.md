@@ -1,38 +1,73 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Run `docker` containers as a service via `systemd`.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Any Linux OS running `systemd` as well as Ansible 1.9+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+By default this role installs `nginx` as a `docker` container. You can set up as many containers as you wish by adding to the `docker_apps` subelement.
+
+```
+# Example Docker App. https://hub.docker.com/_/nginx/
+docker_apps:
+  - name: nginx
+    description: Nginx
+    container: nginx
+    volumes:
+      - { src: '/web', mount: '/usr/share/nginx/html', ro: true }
+    ports:
+      - { src: '80', dest: '8443' }
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+N/A
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Create variable file to override default `docker` containers. Make it look something like this:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```
+# docker_apps.yml
+---
+# Docker App: https://hub.docker.com/_/httpd/
+docker_apps:
+  - name: apache
+    description: Apache httpd
+    container: httpd:2.4
+    volumes:
+      - { src: '/web', mount: '/usr/local/apache2/htdocs/', ro: true }
+    ports:
+      - { src: '80', dest: '8444' }
+```
+
+Include the new `docker` apps to the `playbook`:
+
+```
+# install_docker_apps.yml
+---
+- hosts: all
+  remote_user: root
+  pre_tasks:
+    - include_vars: docker_apps.yml
+  roles:
+    - ansible-systemd-docker
+```
 
 License
 -------
 
-BSD
+GPL
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Matt DePorter
