@@ -1,12 +1,17 @@
 ---
 # tasks file for ansible-systemd-docker
 
-# - name: install docker and required packages
-#   package: name='{{ item }}' state=latest
-#   with_items: '{{ packages }}'
-- debug: var=item
+- name: install docker and required packages
+  package: name='{{ item }}' state=latest
+  with_items: '{{ packages }}'
+  tags:
+    - install
+    - docker
+
+- debug: var=item verbosity=4
   with_items: '{{ docker_apps }}'
-  tags: debug
+  tags:
+    - debug
 
 - name: template docker app systemd
   template:
@@ -18,8 +23,12 @@
     backup: yes
   notify: reload systemd
   with_items: '{{ docker_apps }}'
+  tags:
+    - template
 
 - meta: flush_handlers
+  tags:
+    - template
 
 - name: make source directories
   file: 
@@ -31,14 +40,20 @@
   with_subelements:
     - '{{ docker_apps }}'
     - volumes
+  tags:
+    - template
 
 - name: pull down all containers
   shell: docker pull {{ item.container }}
   with_items: '{{ docker_apps }}'
   register: docker_pull
   until: docker_pull|succeeded
+  tags:
+    - docker
 
 - service:
     name: docker-{{ item.name }}.service
-    state: restarted
+    state: started
   with_items: '{{ docker_apps }}'
+  tags:
+    - docker
