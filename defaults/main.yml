@@ -1,15 +1,15 @@
 ---
 # defaults file for ansible-systemd-docker
 
-PACKAGES:
+packages:
   - docker
 
 # Example Docker App. https://hub.docker.com/_/nginx/
-DOCKER_APPS:
-  nginx:
-    DESCRIPTION: Nginx
-    CONTAINER: nginx
-    VOLUMES:
+docker_apps:
+  - name: nginx
+    description: Nginx
+    container: nginx
+    volumes:
       - { src: '/web', mount: '/usr/share/nginx/html', ro: true }
-    PORTS:
+    ports:
       - { src: '80', dest: '8443' }
