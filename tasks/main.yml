@@ -43,6 +43,16 @@
   tags:
     - template
 
+- name: start docker service
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - docker
+  tags:
+    - docker
+
 - name: pull down all containers
   shell: docker pull {{ item.container }}
   with_items: '{{ docker_apps }}'
@@ -54,6 +64,7 @@
 - service:
     name: docker-{{ item.name }}.service
     state: started
+    enabled: yes
   with_items: '{{ docker_apps }}'
   tags:
     - docker

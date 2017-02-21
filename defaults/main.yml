@@ -13,3 +13,6 @@ docker_apps:
       - { src: '/web', mount: '/usr/share/nginx/html', ro: true }
     ports:
       - { src: '80', dest: '8443' }
+    extra_args:
+      - 'PUID=0'
+      - 'PGID=0'

@@ -23,6 +23,9 @@ docker_apps:
       - { src: '/web', mount: '/usr/share/nginx/html', ro: true }
     ports:
       - { src: '80', dest: '8443' }
+    extra_args:
+      - 'PUID=0'
+      - 'PGID=0'
 ```
 
 Dependencies
@@ -47,6 +50,9 @@ docker_apps:
       - { src: '/web', mount: '/usr/local/apache2/htdocs/', ro: true }
     ports:
       - { src: '80', dest: '8444' }
+    extra_args:
+      - 'PUID=0'
+      - 'PGID=0'
 ```
 
 Include the new `docker` apps to the `playbook`:
