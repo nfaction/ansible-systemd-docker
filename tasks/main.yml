@@ -42,6 +42,7 @@
     - volumes
   tags:
     - template
+    - mkdir
 
 - name: start docker service
   service:
