@@ -4,6 +4,8 @@
 packages:
   - docker
 
+make_dirs: True
+
 # Example Docker App. https://hub.docker.com/_/nginx/
 docker_apps:
   - name: nginx
