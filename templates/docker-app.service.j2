@@ -8,7 +8,7 @@ Restart=on-failure
 RestartSec=10
 ExecStartPre=-/usr/bin/docker kill {{ item.name }}
 ExecStartPre=-/usr/bin/docker rm {{ item.name }}
-ExecStart=/usr/bin/docker run --name {{ item.name }} {% if item.ports %}{% for port in item.ports %}--publish {{ port.dest }}:{{ port.src }} {% endfor %}{% endif %}{% if item.volumes %}{% for volume in item.volumes %}--volume "{{ volume.src }}:{{ volume.mount }}{% if volume.ro %}:ro{% endif %}" {% endfor %}{% endif %} {% if item.extra_args %}{% for extra in item.extra_args %}-e {{ extra }} {% endfor %}{% endif %}{{ item.container }}
+ExecStart=/usr/bin/docker run --name {{ item.name }} {% if item.raw_options %}{% for raw in item.raw_options %}{{ raw }} {% endfor %}{% endif %} {% if item.ports %}{% for port in item.ports %}--publish {{ port.dest }}:{{ port.src }} {% endfor %}{% endif %}{% if item.volumes %}{% for volume in item.volumes %}--volume "{{ volume.src }}:{{ volume.mount }}{% if volume.ro %}:ro{% endif %}" {% endfor %}{% endif %} {% if item.extra_args %}{% for extra in item.extra_args %}-e {{ extra }} {% endfor %}{% endif %}{{ item.container }}
 ExecStop=/usr/bin/docker stop {{ item.name }}
 
 [Install]

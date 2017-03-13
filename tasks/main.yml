@@ -2,7 +2,9 @@
 # tasks file for ansible-systemd-docker
 
 - name: install docker and required packages
-  package: name='{{ item }}' state=latest
+  package:
+    name: '{{ item }}'
+    state: latest
   with_items: '{{ packages }}'
   tags:
     - install
