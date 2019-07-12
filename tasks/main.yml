@@ -6,6 +6,16 @@
     name: '{{ item }}'
     state: latest
   with_items: '{{ packages }}'
+  when: install_os_deb_version | bool
+  tags:
+    - install
+    - docker
+
+- name: install docker python module
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ pip_packages }}"
   tags:
     - install
     - docker
@@ -18,13 +28,31 @@
 - name: template docker app systemd
   template:
     src: docker-app.service.j2
-    dest: /etc/systemd/system/docker-{{ item.name }}.service
+    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
     backup: yes
   notify: reload systemd
   with_items: '{{ docker_apps }}'
+  when:
+    - item.container != ""
+    - item.url is not defined
+  tags:
+    - template
+
+- name: pull down custom docker app systemd files
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    checksum: "{{ item.checksum | default(omit) }}"
+  notify: reload systemd
+  with_items: '{{ docker_apps }}'
+  when: item.url is defined
   tags:
     - template
 
@@ -37,12 +65,29 @@
     path: '{{ item.1.src }}'
     state: directory
     mode: 0755
-    owner: root
-    group: root
+    owner: "{{ item.1.owner | default('root') }}"
+    group: "{{ item.1.group | default('root') }}"
   with_subelements:
     - '{{ docker_apps }}'
     - volumes
   when: make_dirs
+  failed_when: false
+  tags:
+    - template
+    - mkdir
+
+- name: pull down extra files
+  get_url:
+    url: "{{ item.1.src }}"
+    dest: "{{ item.1.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  with_subelements:
+    - '{{ docker_apps }}'
+    - files_to_dl
+  when: item.1.src is defined
   tags:
     - template
     - mkdir
@@ -57,16 +102,26 @@
   tags:
     - docker
 
+# - name: pull down all containers
+#   docker_image:
+#     name: "{{ item.container }}"
+#   with_items: '{{ docker_apps }}'
+#   register: docker_pull
+#   until: docker_pull | succeeded
+#   tags:
+#     - docker
+
 - name: pull down all containers
   shell: docker pull {{ item.container }}
   with_items: '{{ docker_apps }}'
   register: docker_pull
-  until: docker_pull|succeeded
+  until: docker_pull | succeeded
+  failed_when: false
   tags:
     - docker
 
 - service:
-    name: docker-{{ item.name }}.service
+    name: "{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     state: started
     enabled: yes
   with_items: '{{ docker_apps }}'

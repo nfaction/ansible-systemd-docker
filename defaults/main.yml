@@ -2,9 +2,20 @@
 # defaults file for ansible-systemd-docker
 
 packages:
+  - python2-docker
+
+pip_packages:
   - docker
+  # - docker-py
+  # - docker-compose
+
+install_os_deb_version: false
 
 make_dirs: True
+
+systemd_unit_prefix: ''
+# systemd_unit_prefix: 'docker-'
+systemd_unit_postfix: '-container'
 
 # Example Docker App. https://hub.docker.com/_/nginx/
 docker_apps:
@@ -19,3 +30,4 @@ docker_apps:
     extra_args:
       - 'PUID=0'
       - 'PGID=0'
+    files_to_dl: []
