@@ -11,7 +11,7 @@ pip_packages:
 
 install_os_deb_version: false
 
-make_dirs: True
+make_dirs: true
 
 systemd_unit_prefix: ''
 # systemd_unit_prefix: 'docker-'
