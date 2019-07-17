@@ -7,13 +7,11 @@ language: python
 services: []
 
 before_install:
-  - deactivate
-  - sudo apt-get update -qq
   - sudo pip install -U pip
   - sudo pip install -U setuptools
 
 install:
-  - sudo pip install cryptography==2.7 molecule==2.19 ansible==2.7.11
+  - sudo pip install molecule==2.19 ansible==2.7.11
   - ansible --version
   - molecule --version
 
