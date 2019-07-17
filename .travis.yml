@@ -4,7 +4,7 @@ sudo: required
 
 language: python
 
-services: []
+services: docker
 
 before_install:
   - deactivate
