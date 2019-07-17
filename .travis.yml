@@ -1,30 +1,19 @@
 ---
-language: python
-services: docker
+dist: xenial
+sudo: required
 
-env:
-  global:
-    - ROLE_NAME: ansible-ssh-config
-  matrix:
-    # Test defaults.
-    # - MOLECULE_DISTRO: centos7
-    # - MOLECULE_DISTRO: ubuntu1804
-    # - MOLECULE_DISTRO: ubuntu1804
-    # - MOLECULE_DISTRO: ubuntu1604
-    - MOLECULE_DISTRO: debian9
-    - MOLECULE_DISTRO: debian10
+language: python
+
+services: []
+
+before_install:
+  - deactivate
+  - sudo apt-get update -qq
 
 install:
-  # Install test dependencies.
-  - pip install molecule==2.19 ansible==2.7.11 docker
-
-before_script: []
+  - sudo pip install molecule
+  - ansible --version
+  - molecule --version
 
 script:
-  # Run tests.
-  - molecule --version
-  - ansible --version
-  - molecule --debug test
-
-notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  - molecule test
