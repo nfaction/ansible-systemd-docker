@@ -20,4 +20,4 @@ install:
   - molecule --version
 
 script:
-  - molecule test
+  - sudo molecule --debug test
