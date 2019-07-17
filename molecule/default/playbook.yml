@@ -1,7 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  vars: []
+  vars:
+    pip_packages: []
   # os_vars_dir: ../../../../group_vars/operating-systems
   roles:
     - role: ansible-systemd-docker

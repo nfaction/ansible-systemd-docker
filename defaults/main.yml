@@ -3,8 +3,7 @@
 
 containerized: false
 
-packages:
-  - python2-docker
+packages: []
 
 pip_packages:
   - docker
