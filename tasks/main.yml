@@ -13,9 +13,8 @@
 
 - name: install docker python module
   pip:
-    name: "{{ item }}"
+    name: "{{ pip_packages }}"
     state: present
-  with_items: "{{ pip_packages }}"
   tags:
     - install
     - docker

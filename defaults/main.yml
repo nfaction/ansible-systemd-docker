@@ -1,6 +1,8 @@
 ---
 # defaults file for ansible-systemd-docker
 
+containerized: false
+
 packages:
   - python2-docker
 
