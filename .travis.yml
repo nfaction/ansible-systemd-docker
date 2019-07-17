@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo pip install molecule
+  - sudo pip install molecule==2.19 ansible==2.7.11
   - ansible --version
   - molecule --version
 
