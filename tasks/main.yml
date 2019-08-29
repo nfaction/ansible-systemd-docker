@@ -35,7 +35,7 @@
   notify: reload systemd
   with_items: '{{ docker_apps }}'
   when:
-    - item.container != ""
+    - item.container
     - item.url is not defined
   tags:
     - template
@@ -92,7 +92,7 @@
     - mkdir
 
 - name: start docker service
-  service:
+  systemd:
     name: '{{ item }}'
     state: started
     enabled: true
@@ -101,9 +101,17 @@
   tags:
     - docker
 
+- name: reload all systemd units
+  systemd:
+    daemon_reload: true
+  tags:
+    - docker
+
 # - name: pull down all containers
 #   docker_image:
 #     name: "{{ item.container }}"
+#     # added in 2.8
+#     # source: pull
 #   with_items: '{{ docker_apps }}'
 #   register: docker_pull
 #   until: docker_pull | succeeded
@@ -121,10 +129,10 @@
     - docker
 
 - name: start the docker apps
-  service:
+  systemd:
     name: "{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
-    state: started
-    enabled: true
+    state: "{{ item.state | default('started') }}"
+    enabled: "{{ item.enabled | default(true) }}"
   with_items: '{{ docker_apps }}'
   tags:
     - docker
