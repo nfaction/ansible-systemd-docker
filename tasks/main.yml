@@ -122,7 +122,7 @@
   command: docker pull {{ item.container }}
   with_items: '{{ docker_apps }}'
   register: docker_pull
-  until: docker_pull | succeeded
+  until: docker_pull.rc == 0
   failed_when: false
   changed_when: false
   tags:
