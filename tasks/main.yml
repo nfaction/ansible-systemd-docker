@@ -1,11 +1,10 @@
 ---
-# tasks file for ansible-systemd-docker
 
 - name: install docker and required packages
   package:
     name: '{{ item }}'
     state: present
-  with_items: '{{ packages }}'
+  with_items: '{{ systemd_docker_packages }}'
   when: install_os_deb_version | bool
   tags:
     - install
@@ -13,51 +12,25 @@
 
 - name: install docker python module
   pip:
-    name: "{{ pip_packages }}"
+    name: "{{ systemd_docker_pip_packages }}"
     state: present
   tags:
     - install
     - docker
 
-- debug: var=item verbosity=4
-  with_items: '{{ docker_apps }}'
+- name: check out main repos
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ systemd_docker_cache_dir }}/{{ item.repo_name }}"
+    force: true
+    accept_hostkey: true
+    version: "{{ item.branch }}"
+  with_items: "{{ systemd_docker_git_repositories_to_checkout }}"
+  connection: local
+  delegate_to: localhost
+  run_once: true
   tags:
-    - debug
-
-- name: template docker app systemd
-  template:
-    src: docker-app.service.j2
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
-    owner: root
-    group: root
-    mode: 0644
-    backup: true
-  notify: reload systemd
-  with_items: '{{ docker_apps }}'
-  when:
-    - item.container
-    - item.url is not defined
-  tags:
-    - template
-
-- name: pull down custom docker app systemd files
-  get_url:
-    url: "{{ item.url }}"
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
-    owner: root
-    group: root
-    mode: 0644
-    backup: true
-    checksum: "{{ item.checksum | default(omit) }}"
-  notify: reload systemd
-  with_items: '{{ docker_apps }}'
-  when: item.url is defined
-  tags:
-    - template
-
-- meta: flush_handlers
-  tags:
-    - template
+    - git
 
 - name: make source directories
   file:
@@ -67,9 +40,9 @@
     owner: "{{ item.1.owner | default('root') }}"
     group: "{{ item.1.group | default('root') }}"
   with_subelements:
-    - '{{ docker_apps }}'
+    - '{{ systemd_docker_apps }}'
     - volumes
-  when: make_dirs
+  when: systemd_docker_make_dirs | bool
   failed_when: false
   tags:
     - template
@@ -84,12 +57,75 @@
     mode: 0644
     force: true
   with_subelements:
-    - '{{ docker_apps }}'
+    - '{{ systemd_docker_apps }}'
     - files_to_dl
   when: item.1.src is defined
   tags:
     - template
     - mkdir
+
+- name: copy git docker-compose.yml files to their destination
+  file:
+    src: "{{ item.compose_src }}"
+    dest: "{{ item.compose_dest }}"
+    mode: "{{ item.mode | default('0755') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  with_items:
+    - systemd_docker_apps
+  when: item.docker_working_dir is defined
+
+
+- name: template docker app systemd
+  template:
+    src: docker-app.service.j2
+    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify: reload systemd
+  with_items: '{{ systemd_docker_apps }}'
+  when:
+    - item.container is defined
+    - (item.url is not defined) or (item.docker_working_dir is defined)
+  tags:
+    - template
+
+- name: template docker-compose app systemd
+  template:
+    src: docker-compose-app.service.j2
+    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify: reload systemd
+  with_items: '{{ systemd_docker_apps }}'
+  when:
+    - item.docker_working_dir is defined
+    - item.container is not defined
+  tags:
+    - template
+
+- name: pull down custom docker app systemd files
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+    checksum: "{{ item.checksum | default(omit) }}"
+  notify: reload systemd
+  with_items: '{{ systemd_docker_apps }}'
+  when: item.url is defined
+  tags:
+    - template
+
+- meta: flush_handlers
+  tags:
+    - template
 
 - name: start docker service
   systemd:
@@ -120,11 +156,12 @@
 
 - name: pull down all containers
   command: docker pull {{ item.container }}
-  with_items: '{{ docker_apps }}'
+  with_items: '{{ systemd_docker_apps }}'
   register: docker_pull
   until: docker_pull.rc == 0
   failed_when: false
   changed_when: false
+  when: item.container is defined
   tags:
     - docker
 
@@ -133,6 +170,6 @@
     name: "{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     state: "{{ item.state | default('started') }}"
     enabled: "{{ item.enabled | default(true) }}"
-  with_items: '{{ docker_apps }}'
+  with_items: '{{ systemd_docker_apps }}'
   tags:
     - docker
