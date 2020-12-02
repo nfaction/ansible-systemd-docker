@@ -1,0 +1,26 @@
+[Unit]
+Description={{ item.description }}
+Requires=docker.service
+BindsTo=docker.service
+Conflicts=shutdown.target reboot.target halt.target
+
+[Service]
+TimeoutStartSec=0
+TimeoutStopSec=30
+Restart=always
+RestartSec=10
+
+WorkingDirectory={{ item.docker_working_dir }}
+
+ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml kill
+ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml rm
+ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml rm -f
+
+ExecStart=/usr/bin/docker-compose -f docker-compose.yml up --force-recreate --no-deps
+
+ExecStop=/usr/bin/docker-compose -f docker-compose.yml stop
+
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

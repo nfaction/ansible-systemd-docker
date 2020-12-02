@@ -1,25 +1,27 @@
 ---
-# defaults file for ansible-systemd-docker
 
-containerized: false
-
-packages: []
-
-pip_packages:
-  - docker
-  # - docker-py
-  # - docker-compose
+# It is highly recommended that you use the following
+# Ansible role to install/configure Docker: lean_delivery.docker
+systemd_docker_packages: []
 
 install_os_deb_version: false
 
-make_dirs: true
+systemd_docker_pip_packages: []
+# - docker
+# - docker-compose
+
+systemd_docker_make_dirs: true
+
+systemd_docker_cache_dir: cache
+systemd_docker_cache_path: "{{ ansible_root_dir }}/{{ systemd_docker_cache_dir }}"
+
+systemd_docker_git_repositories_to_checkout: []
 
 systemd_unit_prefix: ''
-# systemd_unit_prefix: 'docker-'
 systemd_unit_postfix: '-container'
 
 # Example Docker App. https://hub.docker.com/_/nginx/
-docker_apps:
+systemd_docker_apps:
   - name: nginx
     description: Nginx
     container: nginx
