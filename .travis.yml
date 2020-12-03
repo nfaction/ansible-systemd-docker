@@ -9,13 +9,13 @@ services: docker
 before_install:
   - deactivate
   - sudo apt-get remove --auto-remove python-yaml
-  - sudo apt-get install python3-venv -y
+  - sudo apt-get install python3-pip python3-venv -y
   - python3 -m venv ~/venv
   - source ~/venv/bin/activate
   - sudo pip install -U pip setuptools
 
 install:
-  - sudo pip install molecule==2.19 ansible==2.7.11
+  - sudo pip install molecule==2.19 ansible==2.10.3
   - ansible --version
   - molecule --version
 

@@ -3,14 +3,13 @@
 - name: configure docker containers as systemd units
   hosts: all
   gather_facts: false
-  vars:
-    roles_dir: roles
+  vars: []
   pre_tasks:
     # Workaround to run playbook inside this role.
     - name: set playbook dir when running this playbook here
       set_fact:
-        ansible_root_dir: "{{ playbook_dir | regex_replace('/{{ roles_dir }}/ansible-systemd-docker', '') }}"
-      when: "'/{{ roles_dir }}/ansible-systemd-docker' in playbook_dir"
+        ansible_root_dir: "{{ playbook_dir | regex_replace('/roles/ansible-systemd-docker', '') }}"
+      when: "'/roles/ansible-systemd-docker' in playbook_dir"
       tags: []
 
   roles:

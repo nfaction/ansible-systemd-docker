@@ -1,14 +1,19 @@
 ---
 
+# Workarounds for running the playbook in this role
+ansible_root_dir: "{{ playbook_dir }}"
+ansible_root_dir_roles_path: "{{ ansible_root_dir }}/roles"
+
 # It is highly recommended that you use the following
 # Ansible role to install/configure Docker: lean_delivery.docker
 systemd_docker_packages: []
 
 install_os_deb_version: false
 
-systemd_docker_pip_packages: []
-# - docker
-# - docker-compose
+pip_executable: pip3
+systemd_docker_pip_packages:
+ - docker
+ - docker-compose
 
 systemd_docker_make_dirs: true
 
