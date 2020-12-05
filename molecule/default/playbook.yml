@@ -2,6 +2,7 @@
 - name: Converge
   hosts: all
   vars:
-    pip_packages: []
+    systemd_docker_pip_packages: []
   roles:
     - role: ansible-systemd-docker
+      pip_executable: pip

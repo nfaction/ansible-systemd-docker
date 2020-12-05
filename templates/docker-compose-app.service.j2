@@ -2,12 +2,15 @@
 Description={{ item.description }}
 Requires=docker.service
 BindsTo=docker.service
+{% if systemd_docker_after_target is defined %}
+After=network.target {{ systemd_docker_after_target }}
+{% endif %}
 Conflicts=shutdown.target reboot.target halt.target
 
 [Service]
 TimeoutStartSec=0
 TimeoutStopSec=30
-Restart=always
+Restart=on-failure
 RestartSec=10
 
 WorkingDirectory={{ item.docker_working_dir }}
