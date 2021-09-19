@@ -1,7 +1,9 @@
 ---
 galaxy_info:
+  role_name: systemd_docker
+  namespace: ansible
   author: Matthew DePorter
-  description: Role to configure X0 VNC Server
+  description: Role to configure Docker containers as systemd services
   company: Mobile-Tech LLC
 
   # If the issue tracker for your role is not on github, uncomment the

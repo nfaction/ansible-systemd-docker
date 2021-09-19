@@ -89,3 +89,8 @@ ENV/
 .ropeproject
 
 cache/
+
+# vim
+*.sw*
+*.pyc
+*.log
