@@ -17,6 +17,8 @@ systemd_docker_pip_packages:
 
 systemd_docker_make_dirs: true
 
+systemd_container_path: "/etc/systemd/system"
+
 systemd_docker_cache_dir: cache
 systemd_docker_cache_path: "{{ ansible_root_dir }}/{{ systemd_docker_cache_dir }}"
 

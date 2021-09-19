@@ -80,7 +80,7 @@
 - name: template docker app systemd
   template:
     src: docker-app.service.j2
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
@@ -95,7 +95,7 @@
 - name: template docker-compose app systemd
   template:
     src: docker-compose-app.service.j2
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
@@ -110,7 +110,7 @@
 - name: pull down custom docker app systemd files
   get_url:
     url: "{{ item.url }}"
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644

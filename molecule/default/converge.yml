@@ -3,6 +3,7 @@
   hosts: all
   vars:
     systemd_docker_pip_packages: []
+    systemd_container_path: /lib/systemd/system
   roles:
     - role: ansible-systemd-docker
       pip_executable: pip
