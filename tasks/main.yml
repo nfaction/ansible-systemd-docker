@@ -89,6 +89,7 @@
   when:
     - item.container is defined
     - (item.url is not defined) or (item.docker_working_dir is defined)
+    - ansible_service_mgr == "systemd"
   tags:
     - template
 
@@ -104,6 +105,7 @@
   when:
     - item.docker_working_dir is defined
     - item.container is not defined
+    - ansible_service_mgr == "systemd"
   tags:
     - template
 
@@ -170,5 +172,7 @@
     state: "{{ item.state | default('started') }}"
     enabled: "{{ item.enabled | default(true) }}"
   with_items: '{{ systemd_docker_apps }}'
+  when:
+    - ansible_service_mgr == "systemd"
   tags:
     - docker
