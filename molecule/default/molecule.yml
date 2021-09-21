@@ -7,30 +7,24 @@ driver:
     managed: false
     ansible_connection_options:
       ansible_connection: local
-lint:
-  name: yamllint
 platforms:
   - name: systemd-localhost
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
 scenario:
   name: default
   test_sequence:
     - destroy
     - dependency
     - prepare
-    # - lint
+    - lint
     - syntax
     - create
     - converge
     - idempotence
     - side_effect
-    # - verify
+    - verify
     - destroy
 Scenario: 'default'
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible

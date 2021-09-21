@@ -80,7 +80,7 @@
 - name: template docker app systemd
   template:
     src: docker-app.service.j2
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
@@ -89,13 +89,14 @@
   when:
     - item.container is defined
     - (item.url is not defined) or (item.docker_working_dir is defined)
+    - ansible_service_mgr == "systemd"
   tags:
     - template
 
 - name: template docker-compose app systemd
   template:
     src: docker-compose-app.service.j2
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
@@ -104,13 +105,14 @@
   when:
     - item.docker_working_dir is defined
     - item.container is not defined
+    - ansible_service_mgr == "systemd"
   tags:
     - template
 
 - name: pull down custom docker app systemd files
   get_url:
     url: "{{ item.url }}"
-    dest: "/etc/systemd/system/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
+    dest: "{{ systemd_container_path }}/{{ systemd_unit_prefix }}{{ item.name }}{{ systemd_unit_postfix }}.service"
     owner: root
     group: root
     mode: 0644
@@ -170,5 +172,7 @@
     state: "{{ item.state | default('started') }}"
     enabled: "{{ item.enabled | default(true) }}"
   with_items: '{{ systemd_docker_apps }}'
+  when:
+    - ansible_service_mgr == "systemd"
   tags:
     - docker
