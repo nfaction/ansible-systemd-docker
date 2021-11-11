@@ -3,7 +3,7 @@ Description={{ item.description }}
 Requires=docker.service
 BindsTo=docker.service
 {% if systemd_docker_after_target is defined %}
-After=network.target {{ systemd_docker_after_target }}
+After=network.target {{ item.systemd_after_target | default(systemd_docker_after_target) }}
 {% endif %}
 Conflicts=shutdown.target reboot.target halt.target
 
