@@ -35,7 +35,7 @@
 
 - name: make source directories
   file:
-    path: '{{ item.1.src }}'
+    path: '{{ item.1.src | default(item.0.docker_working_dir) }}'
     state: directory
     mode: 0755
     owner: "{{ item.1.owner | default('root') }}"

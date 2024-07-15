@@ -2,7 +2,7 @@
 
 - name: configure docker containers as systemd units
   hosts: all
-  gather_facts: false
+  gather_facts: true
   vars: []
   pre_tasks:
     # Workaround to run playbook inside this role.
