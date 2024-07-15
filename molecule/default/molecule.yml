@@ -1,30 +1,22 @@
 ---
 dependency:
   name: galaxy
-driver:
-  name: delegated
   options:
-    managed: false
-    ansible_connection_options:
-      ansible_connection: local
+    ignore-errors: true
+driver:
+  name: docker
 platforms:
-  - name: systemd-localhost
+  - name: docker-systemd-instance
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:${MOLECULE_TAG:-latest}"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
 provisioner:
   name: ansible
-scenario:
-  name: default
-  test_sequence:
-    - destroy
-    - dependency
-    - prepare
-    - lint
-    - syntax
-    - create
-    - converge
-    - idempotence
-    - side_effect
-    - verify
-    - destroy
-Scenario: 'default'
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 verifier:
   name: ansible

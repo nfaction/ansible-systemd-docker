@@ -1,52 +1,69 @@
 ---
-name: Ansible Molecule Test Matrix
-
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-
-  workflow_dispatch:
-
-jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: pip3 install yamllint
-
-      - name: Lint code.
-        run: |
-          yamllint .
-
-  molecule:
-    name: Molecule
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: sudo pip3 install ansible molecule[docker] docker
-
-      - name: Run Molecule tests.
-        run: sudo molecule test
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
+  name: Ansible Molecule Test Matrix
+  
+  on:
+    push:
+      branches:
+        - master
+    pull_request:
+      branches:
+        - master
+  
+    workflow_dispatch:
+  
+  jobs:
+    lint:
+      name: Lint
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out the codebase.
+          uses: actions/checkout@v2
+  
+        - name: Set up Python 3.
+          uses: actions/setup-python@v2
+          with:
+            python-version: '3.x'
+  
+        - name: Install test dependencies.
+          run: pip3 install yamllint
+  
+        - name: Lint code.
+          run: |
+            yamllint .
+  
+    molecule:
+      name: Molecule
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          distro:
+            - debian11
+            - debian12
+  
+      steps:
+        - name: Check out the codebase.
+          uses: actions/checkout@v2
+  
+        - name: Set up Python 3.
+          uses: actions/setup-python@v2
+          with:
+            python-version: '3.8'
+  
+        - name: Install test dependencies.
+          run: |
+            python -m pip install --upgrade pip
+            pip install ansible
+            pip install molecule[docker]
+  
+        - name: Install Ansible requirements
+          run: |
+            if [ -f requirements.yml ]; then
+              ansible-galaxy install -r requirements.yml
+            fi
+  
+        - name: Run Molecule tests.
+          run: molecule test
+          env:
+            PY_COLORS: '1'
+            ANSIBLE_FORCE_COLOR: '1'
+            MOLECULE_DISTRO: ${{ matrix.distro }}

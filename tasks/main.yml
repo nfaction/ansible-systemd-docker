@@ -125,6 +125,8 @@
     - template
 
 - meta: flush_handlers
+  when:
+    - systemd_docker_perform_restarts | bool
   tags:
     - template
 
@@ -135,12 +137,16 @@
     enabled: true
   with_items:
     - docker
+  when:
+    - systemd_docker_perform_restarts | bool
   tags:
     - docker
 
 - name: reload all systemd units
   systemd:
     daemon_reload: true
+  when:
+    - systemd_docker_perform_restarts | bool
   tags:
     - docker
 
@@ -162,7 +168,9 @@
   until: docker_pull.rc == 0
   failed_when: false
   changed_when: false
-  when: item.container is defined
+  when:
+    - systemd_docker_perform_restarts | bool
+    - item.container is defined
   tags:
     - docker
 
@@ -173,6 +181,7 @@
     enabled: "{{ item.enabled | default(true) }}"
   with_items: '{{ systemd_docker_apps }}'
   when:
+    - systemd_docker_perform_restarts | bool
     - ansible_service_mgr == "systemd"
   tags:
     - docker

@@ -27,6 +27,8 @@ systemd_docker_git_repositories_to_checkout: []
 systemd_unit_prefix: ''
 systemd_unit_postfix: '-container'
 
+systemd_docker_perform_restarts: true
+
 # Example Docker App. https://hub.docker.com/_/nginx/
 systemd_docker_apps:
   - name: nginx

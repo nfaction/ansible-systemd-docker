@@ -4,6 +4,7 @@
   vars:
     systemd_docker_pip_packages: []
     systemd_container_path: /lib/systemd/system
+    systemd_docker_perform_restarts: false
   roles:
     - role: ansible-systemd-docker
-      pip_executable: pip
+      pip_executable: pip3
