@@ -30,6 +30,10 @@ systemd_unit_postfix: '-container'
 
 systemd_docker_perform_restarts: true
 
+docker_storage_mount: /opt
+systemd_docker_owner: root
+systemd_docker_group: root
+
 # Example Docker App. https://hub.docker.com/_/nginx/
 systemd_docker_apps:
   - name: nginx

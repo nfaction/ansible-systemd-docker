@@ -50,14 +50,16 @@
 
 - name: make source directories
   file:
-    path: '{{ item.src | default(item.docker_working_dir) }}'
+    path: '{{ item.src | default(item.docker_working_dir | default("")) }}'
     state: directory
     mode: 0755
     owner: "{{ item.owner | default('root') }}"
     group: "{{ item.group | default('root') }}"
   with_items:
     - '{{ systemd_docker_apps }}'
-  when: systemd_docker_make_dirs | bool
+  when:
+    - systemd_docker_make_dirs | bool
+    - item.src is defined or item.docker_working_dir is defined
   tags:
     - template
     - mkdir
