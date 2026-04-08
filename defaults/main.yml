@@ -12,9 +12,15 @@ systemd_docker_packages:
 install_os_deb_version: false
 
 pip_executable: pip3
-systemd_docker_pip_packages:
- - docker
- - docker-compose
+systemd_docker_pip_packages: []
+#  - docker
+#  - docker-compose
+
+pip_break_system_packages: true
+
+docker_compose_bin_path: "/usr/bin/docker compose"
+# Older versions of docker-compose
+# docker_compose_bin_path: "/usr/bin/docker-compose"
 
 systemd_docker_make_dirs: true
 
