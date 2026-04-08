@@ -15,13 +15,13 @@ RestartSec=10
 
 WorkingDirectory={{ item.docker_working_dir }}
 
-ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml kill
-ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml rm
-ExecStartPre=-/usr/bin/docker-compose -f docker-compose.yml rm -f
+ExecStartPre=-{{ docker_compose_bin_path }} -f docker-compose.yml kill
+ExecStartPre=-{{ docker_compose_bin_path }} -f docker-compose.yml rm
+ExecStartPre=-{{ docker_compose_bin_path }} -f docker-compose.yml rm -f
 
-ExecStart=/usr/bin/docker-compose -f docker-compose.yml up --force-recreate --no-deps
+ExecStart={{ docker_compose_bin_path }} -f docker-compose.yml up --force-recreate --no-deps
 
-ExecStop=/usr/bin/docker-compose -f docker-compose.yml stop
+ExecStop={{ docker_compose_bin_path }} -f docker-compose.yml stop
 
 NotifyAccess=all
 
