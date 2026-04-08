@@ -37,8 +37,8 @@
       strategy:
         matrix:
           distro:
-            - debian11
             - debian12
+            - debian13
   
       steps:
         - name: Check out the codebase.
